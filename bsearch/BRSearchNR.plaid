@@ -1,0 +1,41 @@
+package plaid.brtypestate.tests;
+/*
+*@author - Ashish 
+*@desc- Binary search tree without runtime array bound checks. 
+*/
+
+
+import java.lang.*;
+
+state BRSearchNR{
+	
+	var unique SizedArray(n) -> Array elements = new SizedArray{};
+	var unique Integer key;
+	
+	method Integer bsearch(unique BoundedInteger (i) -> Integer key, unique SizedArray(n) -> Array arr){
+		var unique Integer low = 0;
+		var unique Integer high = n - 1;
+		var unique mid;
+		var unique x;
+
+		while (low <= high){
+			mid = ( low + high ) / 2;
+			x = arr.getEl (mid);
+			if(key == x) 
+			{
+				return mid;
+			}else if(key < x)
+			{
+				high = mid -1;
+			}else{
+				low = mid + 1;
+			}
+
+		}
+		return -1;
+
+	}
+	
+
+
+}

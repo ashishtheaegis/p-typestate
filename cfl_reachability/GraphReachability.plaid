@@ -1,0 +1,167 @@
+
+package tests.dependenttypechecker.cfl_reachability;
+import plaid.counters.StackModel;
+import plaid.collections.Array;
+import plaid.collections.Set;
+import java.lang.*;
+import java.util.*;
+
+state Graph {
+		var unique Set Nodes;
+		var unique Set Edges;
+		
+		method unique Set getEdges(){
+			Edges;
+
+		}
+		method unique Set getNodes(){
+			Nodes;
+
+		}
+}
+state Edge{
+
+
+}
+state callEdge case of Edge{
+	 
+
+
+}
+state returnEdge case of Edge{
+
+}
+
+	
+state GraphReachability{
+
+	type EdgeWithId : Pi (eid1, eid2, eid1 > 0, eid2 > 0) -> Edge;
+	var unique StackModelType (0b00 , 0b00) -> Stack  sm = new StackModel;
+	
+	method unique Boolean validPath(@j.util.Queue  callString){
+		var size = callString.size();	
+		while(size > 0){ // find the loop invariant
+
+			
+			var unique EdgeWithId (en1 , en2, en1 >= 0 , en2 >= 0) -> Edge edgeId = callString.remove();
+		//	var eid1 = edgeId.getId1();
+		//	var eid2 = edgeId.getId2();
+			var unique StackElementWithId (en1, en2) -> BoundedInteger smWithId = new BoundedInteger; // isntantiate a StackElementWithId using the edge data
+			match(edgeId){
+				case CallEdge{
+					sm.push(smWithId);
+				
+				}
+				case ReturnEdge{
+					sm.pop(smWithId);
+				}
+				default{
+					
+				}
+			};		
+			size = zize - 1;
+		};
+
+	 	sm.isEmpty();
+		
+	
+	}
+
+method void main(){
+
+	var unique EdgeWithId(0b0, 0b1) -> CallEdge cEdge1 = new Edge;
+	var unique StackElementWithId(0b0 , 0b1) -> BoundedIneger c1 = new BoundedInteger; 
+	var unique EdgeWithId(0b1, 0b0) -> CallEdge cEdge21 = new Edge;
+	var unique StackElementWithId(0b1 , 0b0) -> BoundedIneger c21 = new BoundedInteger;
+	var unique EdgeWithId(0b1, 0b1) -> CallEdge cEdge31 = new Edge;
+	var unique StackElementWithId(0b1 , 0b1) -> BoundedIneger c31 = new BoundedInteger;
+
+	var unique EdgeWithId(0b1, 0b1) -> CallEdge cEdge32 = new Edge;
+	var unique StackElementWithId(0b1 , 0b1) -> BoundedIneger c32 = new BoundedInteger;
+	var unique EdgeWithId(0b1, 0b0) -> CallEdge cEdge22 = new Edge;
+	var unique StackElementWithId(0b1 , 0b0) -> BoundedIneger c22 = new BoundedInteger;
+	var unique EdgeWithId(0b1, 0b0) -> ReturnEdge rEdge21 = new Edge;
+	var unique StackElementWithId(0b1 , 0b0) -> BoundedIneger r21 = new BoundedInteger;
+	
+	var unique EdgeWithId(0b1, 0b1) -> ReturnEdge rEdge31 = new Edge;
+	var unique StackElementWithId(0b1 , 0b1) -> BoundedIneger r31 = new BoundedInteger;
+	var unique EdgeWithId(0b1, 0b1) -> ReturnEdge rEdge32 = new Edge;
+	var unique StackElementWithId(0b1 , 0b1) -> BoundedIneger r32 = new BoundedInteger;
+	var unique EdgeWithId(0b1, 0b0) -> ReturnEdge rEdge22 = new Edge;
+	var unique StackElementWithId(0b1 , 0b0) -> BoundedIneger r22 = new BoundedInteger;
+	var unique EdgeWithId(0b0, 0b1) -> ReturnEdge rEdge1 = new Edge;
+	var unique StackElementWithId(0b0 , 0b1) -> BoundedIneger r1 = new BoundedInteger;
+
+	var unique StackModelType (0b0, 0b0) -> Stack sm = new Stack;
+	sm.push(c1);
+	sm.push(c21);
+	sm.push(c31);
+	sm.push(c32);
+	sm.push(c22);
+	sm.pop(r22);
+	sm.pop(r32);
+	sm.pop(r31);
+	sm.pop(r21);
+	sm.pop(r1); // correct
+
+	
+	sm.push(c1);
+	sm.push(c21);
+	sm.push(c31);
+	sm.push(c32);
+	sm.push(c22);
+	sm.pop(r22);
+	sm.pop(r31); // error
+	sm.pop(r31); 
+	sm.pop(r21);
+	sm.pop(r1); 
+
+
+	
+	var unique Queue<EdgeWithId> callString = new Queue<EdgeWithId>;
+	callString.add(cEdge1);
+	callString.add(cEdge21);
+	callString.add(cEdge31);
+	callString.add(cEdge32);
+	callString.add(cEdge22);
+
+	callString.add(rEdge22);
+	callString.add(rEdge32);
+	callString.add(rEdge31);
+	callString.add(rEdge21);	
+	callString.add(rEdge1);
+
+
+	validPath(callString); // no error
+
+	var unique Queue<EdgeWithId> callString_erroneous = new Queue<EdgeWithId>;
+	callString.add(cEdge1);
+	callString.add(cEdge21);
+	callString.add(cEdge31);
+	callString.add(cEdge32);
+	callString.add(cEdge22);
+
+	callString.add(rEdge22);
+	callString.add(rEdge32);
+	callString.add(rEdge21);//error	
+	callString.add(rEdge1);
+
+	validPath(callString_erroneous);
+	
+	
+		
+	
+	}
+	
+
+		
+
+}
+
+
+
+
+
+
+
+

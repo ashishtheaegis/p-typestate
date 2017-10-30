@@ -1,0 +1,57 @@
+package plaid.brtypestate.tests;
+/*
+*@author - Ashish 
+*@desc- Binary search tree without runtime array bound checks. 
+*/
+
+
+import java.lang.*;
+
+state BRSearch{
+	
+	
+	method Integer bsearch(unique BoundedInteger (i) -> Integer key , unique SizedArray(size) -> Array arr){
+		fn 
+		look(0, size - 1, key, arr);
+		
+
+	}
+
+
+	method Integer compare(unique Integer x, unique Integer y){
+		if(x < y)
+			LESS;
+		else if(x == y)
+			EQUAL;
+		else
+			GREATER;
+		
+	}
+
+	method Integer look(unique BoundedInteger(lo, 0 <= lo, lo <= size) -> Integer low, unique BoundedInteger(hi, 0 <= hi, hi+1 <= size) -> Integer high, unique Integer key, unique SizedArray(size) -> Array arr){
+		if(high >= low){
+			val m = lo + (high - low) / 2;
+			val x = arr.sub(arr, m); // sub array function of the state SizedArray 
+			match(cmp (key, x)){
+				case LESS { // add a way to define constants in the language
+					look(lo, m-1, key, arr );
+				}
+				case EQUALL {
+					arr.get(m); // the first element of subarray is the required key
+
+				}
+				case GREATER {
+					look(m+1, hi, key, arr );
+				}
+				default{
+					java.lang.System.out.println("bad");
+				}		
+
+
+			};
+		};
+		
+
+	}
+
+}

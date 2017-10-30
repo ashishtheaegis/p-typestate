@@ -1,0 +1,53 @@
+package typechekertests.prod_cons;
+
+state Buffer{
+
+	var p = 0;
+	var c = 0;
+	var status;
+
+
+	method getC(){
+	   	this.c;		
+	}	
+	
+	method getP(){
+		this.p;
+
+	}
+
+	method void toggle();
+	method void getStatus();
+	
+	method void produce()[unique Buffer (p, c, p > c) -> OpneBuffer >> unique Bufffer (p', c', p' = p + 1, c' = c, p > c) inBuf]
+
+	{
+		var p_in = inBuf.getP();
+		p_in = p_in + 1;
+		
+		
+
+	}
+	
+	method void consume()[unique Buffer (p, c, p > c) -> OpneBuffer >> unique Bufffer (p', c', p' = p, c' = c + 1, p > c) inBuf]
+
+	{
+		
+		
+		c_in = inBuf.getC() + 1; 
+		
+
+	}
+	
+
+}
+
+
+
+
+	
+
+
+
+
+}

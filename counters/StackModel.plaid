@@ -1,0 +1,40 @@
+package plaid.counters;
+
+import plaid.lang.Stack;
+import plaid.lang.checked.BoundedInteger;
+state StackModel{
+
+	var Stack k1 = new Stack;
+	var Stack k2 = new Stack;
+
+	type StackModelType : Pi (c1, c2) -> Stack;
+	type StackElementWithId : Pi (b1, b2) -> BoundedInteger;
+
+
+
+
+	// Apply binary pop on bot the objects 
+	method void push(unique StackElementWithId (b1, b2) -> BoundedInteger element) [unique StackModelType (c1, c2) -> Stack >> unique StackModelType (c12, c22 , t1 = c1 * 2, t2 = b1 * 1, c12 = t1 + t2 , t3 = c2 * 2, t4 = b2 * 1, c22 = t3 + t4) -> Stack]
+	{
+		this.k1.push(b1);
+		this.k2.push(b2);
+		this <- StackModelType (c12, c22, c12 = (c1 * 2) + (b1 * 1 ), c22 = (c2 * 2) + (b2 * 1)) -> Stack;
+	
+	}
+
+	method void pop(unique StackElementWithId (b1, b2) -> BoundedInteger element) [unique StackModelType (c1, c2, b1 == c1, b2 == c2) -> Stack >> unique StackModelType (c1', c2', c1' = c1 / 2, c2' = c2'/2) -> Stack]{
+		this.k1.pop();
+		this.k2.pop();
+		this < StackModelType (c1', c2', c1' = c1/2 , c2' = c2/2 ) -> Stack;
+		
+
+	}
+	method Boolean isEmpty()[unique StackModelType (0 , 0) -> Stack]{
+		
+		True;
+	
+	} 	
+	
+
+}
+

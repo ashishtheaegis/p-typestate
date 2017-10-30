@@ -1,0 +1,57 @@
+
+package plaid.dependenttypechecker.cfg_reachability;
+import plaid.lang.Array;
+
+state Node{
+	var callorreturnId;
+}
+
+state ClosedNode case of Node{
+
+	method void open();
+
+}
+
+
+state OpenNode case of Node{
+
+	method void close();
+
+}
+
+state Context{
+
+	type cxtDepTy : Pi (n) -> Node;
+	var  calllevel;
+	var openOrClosed;
+
+	method void getCallLevel (){
+
+		calllevel;
+	}
+	
+	method void callP (unique Node p)[unique cxtDepTy (n) -> Node  >> unique cxtDepTy (n+1) -> Node ]{
+		// add the edge to the set of valid edges
+		
+		this <- cxtDepTy (n + 1 ) -> Node;
+				
+
+		}
+
+	
+	
+	method void returnP (unique Node p)[unique cxtDepTy (n) -> OpenNode >> unique cxtDepTy (n+1) -> ClosedNode ]{
+
+		// add the edge to the set of valid edges
+
+		this <- cxtDepTy(n+1) -> ClosedNode;
+
+		}
+
+
+	}
+	
+
+
+
+

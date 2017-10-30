@@ -1,0 +1,123 @@
+package plaid.cfl_reachability;
+
+import plaid.counters.StackModel;
+import plaid.lang.Array;
+import plaid.lang.Set;
+import java.lang.*;
+
+
+state Graph {
+		var Set Nodes;
+		var Set Edges;
+		
+		method Set getEdges(){
+			Edges;
+
+		}
+		method Set getNodes(){
+			Nodes;
+
+		}
+}
+
+state callEdge case of Edge{
+
+
+
+}
+state returnEdge case of Edge{
+
+}
+
+	
+state GraphReachability{
+
+	type EdgeWithId : Pi (eid1, eid2, eid1 > 0, eid2 > 0) -> Edge;
+	var unique StackModel sm = new StackModel;
+	
+	method Boolean validPath(unique Queue<EdgeWithId> callString){
+		while(callString.size > 0){
+			var unique EdgeWithId edgeId = callString.remove();
+			var unique StackElementWithId (edgeId.eid1, edgeId.eid2) -> BoundedInteger smWithId = new BoundedInteger; // isntantiate a StackElementWithId using the edge data
+			match(edgeId){
+				case CallEdge{
+					sm.push(smWithId);
+				
+				}
+				case ReturnEdge{
+					sm.pop(smWithId);
+				}
+				default{
+					sm.push(smWithId);
+				}
+			};		
+
+		};
+
+	 	sm.isEmpty();
+		
+	
+	}
+
+method void main(){
+
+	var unique EdgeWithId(0, 1) -> CallEdge cEdge1;
+	var unique EdgeWithId(1, 0) -> CallEdge cEdge21;
+	var unique EdgeWithId(1, 1) -> CallEdge cEdge31;
+
+	var unique EdgeWithId(1, 1) -> CallEdge cEdge32;
+	var unique EdgeWithId(1, 0) -> CallEdge cEdge22;
+	var unique EdgeWithId(1, 0) -> ReturnEdge rEdge 21;
+	
+	var unique EdgeWithId(1, 1) -> ReturnEdge rEdge 31;
+	var unique EdgeWithId(1, 1) -> ReturnEdge rEdge 32;
+	var unique EdgeWithId(1, 0) -> ReturnEdge rEdge 22;
+	var unique EdgeWithId(0, 1) -> ReturnEdge rEdge 1;
+
+
+	var unique Queue<EdgeWithId> callString = new Queue<EdgeWithId>();
+	callString.add(cEdge1);
+	callString.add(cEdge21);
+	callString.add(cEdge31);
+	callString.add(cEdge32);
+	callString.add(cEdge22);
+	
+	callString.add(rEdge1);
+	callString.add(rEdge21);
+	callString.add(rEdge31);
+	callString.add(rEdge32);
+	callString.add(rEdge22);
+
+
+	
+
+	// prepare a callstring using these edges
+	
+	var unique cxtDepTy (0) -> ClosedNode cxt = new Context;
+	var Graph g_star = new Graph {
+				Nodes = new Set{int array nodes = {1,2,3,4}}
+				Edges = new Set{int array edges = {1, 2 ,3, 4,5 }};
+
+
+	}
+	
+	var PDA auto = new PDA {
+
+
+
+	}
+	var validEdges = validControlFlow(g_star, auto);
+		
+	
+	}
+	
+
+}
+
+
+
+
+
+
+
+

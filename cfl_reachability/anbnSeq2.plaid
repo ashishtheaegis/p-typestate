@@ -1,0 +1,50 @@
+package tests.dependenttypechecker;
+import plaid.counters.StackModel;
+import plaid.colelctions.SizedArray;
+import java.util.*;
+
+
+state AnBnParser{
+
+	var unique StackModelType (0be, 0be) -> InitialState sm = new StackModel;
+	state InitialState case of Stack;
+	state BState case of Stack;
+	state FinalState case of Stack;
+
+	method void scanFA (unique ElementWithId(0b0, 0b0) -> Element el)[unique StackModelType (0be, 0be) -> Stack >> unique StackModelType (0b0, 0b0) -> Stack sm]
+	{
+		sm.push(el);
+		
+	}
+
+	method void scanA (unique ElementWithId(0b0, 0b0) -> Element el)[unique StackModelType (0b0, 0b0) -> Stack >> unique StackModelType (0b0, 0b0) -> Stack sm]{
+		sm.push(el);
+
+	}
+	
+	method void scanFB (unique ElementWithId(0b0, 0b1) -> Element el)[unique StackModelType (0b0, 0b0) -> InitalState >> unique StackModelType (0b0, 0b0) -> BState sm]{
+		sm <- unique StackModelType (0b0, 0b0) -> Bstate;
+		sm.pop(new ElementWithId(0b0, 0b0););
+	}
+
+	method void scanB (unique ElementWithId(0b0, 0b1) -> Element el)[unique StackModelType (0b0, 0b0) -> BState >> unique StackModelType (0b0, 0b0) -> BState sm]{
+		sm.pop(new ElementWithId(0b0, 0b0););
+	}
+
+	method void endOfString (unique ElementWithId(0be, 0be) -> Element el)[unique StackModelType (0be, 0be) -> BState >> unique StackModelType (0be, 0be) -> FinalState sm]{
+		sm <- unique StackModelType (0be, 0be) -> FinalState; 	
+		
+	}
+}
+method void main (){
+	var unique AnBnParser anbnP = new AnBnParser;
+	anbnP.scanFA(new ElementWithId(0b0, 0b0));
+	anbnP.scanA(new ElementWithId(0b0, 0b0));
+	anbnP.scanA(new ElementWithId(0b0, 0b0));
+	anbnP.scanB(new ElementWithId(0b0, 0b1)); // error
+	anbnP.scanB(new ElementWithId(0b0, 0b1)); // error
+
+
+
+}
+

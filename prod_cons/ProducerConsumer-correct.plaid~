@@ -1,0 +1,146 @@
+package plaid.typecheckertests.single;
+
+import Buffer;
+/*state Buffer{
+
+	var status;
+	var int array(p); 
+	method void toggle();
+	method getStatus();
+}
+*/
+
+
+state OpenBuffer case of Buffer{
+
+
+
+ 	var status = 1;
+	method 	void toggle()[unique SharedBufferOpen (n , m, n > m) -> OpenBuffer >> unique SharedBufferClosed (n, m, n > m) -> ClosedBuffer]{
+		this <- SharedBufferClosed (n, m, n > m) -> ClosedBuffer;
+	}
+
+	method getStatus(){
+		status;
+	}
+
+}
+
+
+state ClosedBuffer case of Buffer{
+
+
+	status = 0;
+	method 	void toggle(){
+		this <- OpenBuffer;
+	}
+
+	method getStatus(){
+		status;
+	}
+
+
+
+
+}
+
+
+state ProducerConsumer {
+	
+	type SharedBuffer : Pi ( produce , consume ) -> Buffer; // new p-typestate property
+	var unique SharedBuffer( 0, 0 ) -> OpenBuffer buf = new OpenBuffer; 
+i
+	method void open(unique SharedBuffer(n, m, n >= m) -> ClosedBuffer >> unique SharedBuffer(n, m , n >= m) -> OpenBuffer buf){
+
+		
+		
+		buf.toggle();
+		
+	}	
+			
+	method void produce()[unique SharedBuffer(n, m, n >= m ) -> OpenBuffer >> unique SharedBuffer(n', n' = n + 1, m, n' >= m) -> OpenBuffer buf]{
+		
+		var p = 0;
+		this <- SharedBufferOpen (n', n' = n + 1, m, n' >= m) -> OpenBuffer;
+
+
+	}
+
+	method void consume()[unique SharedBuffer(n , m , n > 0 ) -> OpenChannel >> unique SharedBuffer (n, m'= m + 1 , n >= m' ) -> OpenBuffer buf ]{
+			
+		buf  <- SharedBuffer(n, m'= m + 1, n > m' ) -> OpenBuffer; 
+
+	}
+		
+	method void Close(unique SharedBuffer(n, m, n >= m) -> OpenBuffer >> unique SharedBuffer(n, m, n >= m) -> CloseBuffer buf){
+
+		buf.toggle();
+	}
+
+}
+
+	method void main(){ // correct
+
+		var unique ProducerConsumer pc = new ProducerConsumer{
+		var unique SharedBuffer(0,0) -> CloseBuffer bf = new SharedBuffer;}
+		pc.open(this.bf);
+
+		pc.produce();
+		pc.produce();
+		pc.produce();
+		pc.consume();
+		pc.consume();
+		pc.close(this.bf); 
+
+
+	}	
+
+	method void  main(){
+
+		var unique SharedBufferClosed (0, 0) -> CloseBuffer bufferOpen = new CloseBuffer;
+		Open(bufferOpen);
+		
+		bufferOpen.produce();
+		bufferOpen.produce();
+	
+		var loopvar = 5;	
+//		for( int i = 0 ; i < 3 ;i++){
+//
+//			bufferOpen.consume();
+//		}		
+		var unique Channel x = new OpenChannel;
+		match(bufferOpened){
+			
+			case SharedBufferOpen {
+				
+				bufferOpened.consume();
+				bufferOpened.consume();
+				bufferOpened.consume();
+
+			}
+
+			case SharedBufferClose {	
+
+				bufferOpened.request();
+				
+
+
+			}
+
+			default {
+				bufferOpened.produce();
+
+			}
+
+
+		};
+		
+		while (varloop > 0){
+			buffereOpened.consume();	
+			varloop = varloop + 1;
+		};		
+		bufferOpened.consume(); 
+
+	}
+
+}
