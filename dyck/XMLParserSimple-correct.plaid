@@ -1,0 +1,85 @@
+package plaid.xml;
+
+/** To check a simple XML property over a paranthesis language with two elements **/
+/* The base XMLParserSimple Class **/
+
+state Element {
+	
+	var unique Integer id;
+	var unique boolean isOpen;
+	var unique boolean isClose;	
+
+}
+state StartElement case of Element{
+	id = 1;
+	isOpen = true;
+}
+state EndElement case of Element{
+	id = 1;
+	isClose = true;
+	
+
+}
+state XMLParserSimple case of Parser{
+
+	type SafeSimpleParser : Pi (ns, ne, ns >= ne) -> Parser;
+	List<Element> elementsScanned = new ArrayList<Element>();
+	Boolean isReading;
+
+	method unique Element startReasding()[unique SafeSimpleParser (n, m) -> Close >> unique SafeSimpleParser (n, m) -> Open]{
+	this.isReading = true;
+	this <- unique SafeSimpleParser (n, m) -> Open;
+	}
+	method unique Element scanStartElement(unique StartElement selement)[unique SafeSimpleParser (n, m) -> Open >> unique SafeSimpleParser (n+1, m) -> Open]{
+	 	elementsScanned.add(selement);
+		this <- uninue SafeSimpleParser(n+1, m) -> Open;
+
+	}
+
+	method unique Element scanEndElement(unique EndElement eelement)[unique SafeSimpleParser (n, m) -> Open >> unique SafeSimpleParser (n, m+1) -> Open]{
+		elementsScanned.add(eelement);
+		this <- unique SafeSimpleParser (n, m+1) -> Open;
+
+	}
+	
+	method boolean endOfFile(unique EndElement eofElement)[unique SafeSimpleParser (n, m, n == m) -> Open >> unique SafeSimpleParser (n , m', n'=n, m'= m, n == m' ) -> Close]{
+
+		elemetsScanned.add(eelement);
+		this.isReading=false;
+		this < unique SafeSimpleParsr(n , m, n == m ) -> Close;
+
+	}
+}
+
+
+method void main(){
+	var unique SafeSimpleParser (0, 0) $->$ Close safeParser = 
+	  new XMLParserSimple{elementsScanned = new ArrayList<Element>(); isReading=flase;};
+	  List<Element> storedElements = new ArrayList<Element>(); 
+  //populate storedElements 
+ 
+  safeParser.startReading();
+  safeParser.scanStartElement(new StartElement());   
+  safeParser.scanStartElement(new StartElement());
+  safeParser.scanStartElement(new StartElement());   
+  safeParser.scanStartElement(new StartElement());      
+  
+  safeParser.scanEndElement(new EndElement()); 
+  var numberScanned = 1;
+  val N = storedElements.size(); 
+  while(numberScanned <= 3){
+    Element el = 
+	storedElements.remove();
+    match(el){
+      case (StartElement){ 
+	scanStartElement(el);
+      }
+      case (EndElement){
+	scanEndElement(el);
+      }
+      default {} 
+     numberScanned++; 
+    };
+  };
+  scanStartElement(new StartElement());
+}

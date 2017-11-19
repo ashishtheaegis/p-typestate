@@ -1,0 +1,58 @@
+package tests.dependenttypechecker.xmlparser;
+import plaid.counters.StackModel;
+import plaid.counters.ElementWithId;
+import plaid.collections.SizedArray;
+import plaid.collections.SizedList;
+import java.util.*;
+
+
+
+state CallWithId case of ElementWithId{}
+state ReturnWithId case of ElementWithId{}
+
+state IVPParser case of Parser{
+
+	var unique StackModelType(0be, 0be) -> Stack sm = new StackModel;
+	
+	method void startScanCall(unique CallWithId(b1, b2) -> CallElement c_i)[unique StackModelType(c1, c2) -> CloseStack >> unique StackModelType(c1' c2') -> OpenStack sm]{
+		sm.open();
+		sm.push();
+
+	}
+	// scan a Call_i , no Pre restrictions.
+	method void scanCall(unique CallWithId(b1, b2) -> CallElement c_i){
+		sm.push(c_i);
+		
+	}
+
+	method void scanReturn(unique ReturnWithId(b1, b2) -> ReturnElement r_i)[unique StackModelType(c1, c2, b1 = lsb(c1),  b2 = lsb(c2)) -> Stack sm ]{
+		sm.pop(r_i);
+
+	}
+
+	method void endOfString()[unique StackModelType(0be, 0be) -> OpenStack sm ]{
+		sm.close();
+		
+	}
+
+
+}
+
+method void main(){
+
+	var unique IVPParser parser = new IVPParser;
+	// [{{}}]
+	parser.startScanCall(new CallWithId(0b0, 0b0));
+	parser.scanCall(new CallWithId(0b0, 0b1));
+	parser.scanCall(new CallWithId(0b0, 0b1));
+
+	parser.scanReturn(new ReturnWithId(0b0, 0b1));
+	parser.scanReturn(new ReturnWithId(0b0, 0b0)); //error
+
+	parser.endOfString(); // correct
+
+
+	
+
+
+}
